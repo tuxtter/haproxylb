@@ -22,12 +22,14 @@ howtoforge
 ###Ejecutar en NODOWEB1###
 #######################
 curl --insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/WebNode1.sh > WebNode1.sh
+vi WebNode1.sh
 /bin/sh WebNode1.sh
 
 #######################
 ###Ejecutar en NODODB1###
 #######################
 curl -insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/DBNode1.sh > DBNode1.sh
+vi DBNode1.sh
 /bin/sh DBNode1.sh
 
 mysql_secure_installation
@@ -37,12 +39,14 @@ mysql -u root -p -e "INSERT INTO mysql.user(User, Host, ssl_cipher, x509_issuer,
 ###Ejecutar en NODOWEB2###
 #######################
 curl --insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/WebNode2.sh > WebNode2.sh
+vi WebNode2.sh
 /bin/sh WebNode2.sh
 
 #######################
 ###Ejecutar en NODODB2###
 #######################
 curl --insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/DBNode2.sh > DBNode2.sh
+vi DBNode2.sh
 /bin/sh DBNode2.sh
 
 mysql -u root -p -e "INSERT INTO mysql.user(User, Host, ssl_cipher, x509_issuer, x509_subject) VALUES('haproxy_check', '192.168.56.101', '', '', ''); FLUSH PRIVILEGES;"
@@ -51,12 +55,14 @@ mysql -u root -p -e "INSERT INTO mysql.user(User, Host, ssl_cipher, x509_issuer,
 ###Ejecutar en NODOWEB3###
 #######################
 curl --insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/WebNode3.sh > WebNode3.sh
+vi WebNode3.sh
 /bin/sh WebNode3.sh
 
 #######################
 ###Ejecutar en NODODB3###
 #######################
 curl --insecure https://raw.githubusercontent.com/tuxtter/haproxylb/master/DBNode3.sh > DBNode3.sh
+vi DBNode3.sh
 /bin/sh DBNode3.sh
 
 mysql -u root -p -e "INSERT INTO mysql.user(User, Host, ssl_cipher, x509_issuer, x509_subject) VALUES('haproxy_check', '192.168.56.101', '', '', ''); FLUSH PRIVILEGES;"
