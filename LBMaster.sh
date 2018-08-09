@@ -1,14 +1,16 @@
 #!/bin/sh
 ##################
-###LOADBALANCER MASTER###
+###LOADBALANCER MASTER & SLAVE###
 ##################
 yum update -y
 yum upgrade -y
-hostname lbmster
-cat "lbmaster" > /etc/hostname
+hostname master
+cat "master" > /etc/hostname
+#sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config && setenforce 0
 yum install haproxy net-tools -y
 cp /etc/haproxy/haproxy.cfg /root/
 curl --insecure https://raw.githubusercontent.com/tuxtter/myScripts/master/haproxy.cfg > /etc/haproxy/haproxy.cfg
+setsebool -P haproxy_connect_any 1
 service haproxy start
 systemctl start haproxy
 systemctl enable haproxy
