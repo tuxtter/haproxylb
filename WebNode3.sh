@@ -16,7 +16,7 @@ firewall-cmd --permanent --zone=public --add-port=80/tcp
 firewall-cmd --zone=public --add-port=24007-24008/tcp --permanent
 firewall-cmd --zone=public --add-port=49152/tcp --permanent
 firewall-cmd --reload
-echo "<html><head><title>Nodo3</title></head><body><h1>Nodo1</h1></body></html>" > /var/www/html/index.html
+echo "<html><head><title>Nodo3</title></head><body><h1>Nodo3</h1></body></html>" > /var/www/html/index.html
 sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config && setenforce 0
 echo "ALL: 192.168.183.0/24 127.0.0.1/32" > /etc/hosts.allow
 yum -y install centos-release-gluster
