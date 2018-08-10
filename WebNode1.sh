@@ -26,4 +26,4 @@ systemctl enable glusterd
 echo "localhost:/vol0 /var/www/html glusterfs defaults,_netdev 0 0" >> /etc/fstab
 cd $HOME
 wget https://wordpress.org/latest.tar.gz
-tar $HOME/xvfz latest.tar.gz
+tar xvfz $HOME/latest.tar.gz
