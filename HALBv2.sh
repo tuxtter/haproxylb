@@ -129,6 +129,12 @@ ssh nodoweb1 'gluster vol set vol0 performance.write-behind-window-size 4MB'
 ssh nodoweb1 'gluster vol set vol0 performance.flush-behind on'
 ssh nodoweb1 'gluster vol set vol0 features.read-only off'
 ssh nodoweb1 'gluster vol info vol0'
+ssh nodoweb1 'mount -a'
+ssh nodoweb2 'mount -a'
+ssh nodoweb3 'mount -a'
+ssh nodoweb1 'service glusterd restart'
+ssh nodoweb2 'service glusterd restart'
+ssh nodoweb3 'service glusterd restart'
 ssh nodoweb1 'cp -r $HOME/wordpress/* /var/www/html/'
 COMMAND="mysql -u root -p\"$DBPASS\" -e \"create database wpdb; grant all privileges on wpdb.* to wpuser@'%' identified by 'jojojo2017X.Y'; FLUSH PRIVILEGES;\""
 ssh nododb1 $COMMAND
@@ -137,8 +143,8 @@ ssh nodoweb1 'cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php'
 ssh nodoweb1 "sed -i '/DB_NAME/s/database_name_here/wpdb/g' /var/www/html/wp-config.php"
 ssh nodoweb1 "sed -i '/DB_USER/s/username_here/wpuser/g' /var/www/html/wp-config.php"
 ssh nodoweb1 "sed -i '/DB_PASSWORD/s/password_here/jojojo2017X.Y/g' /var/www/html/wp-config.php"
-COMMAND="sed -i '/DB_HOST/s/localhost/$VIRTUAIP/g' /var/www/html/wp-config.php"
+COMMAND="sed -i '/DB_HOST/s/localhost/$MASTER/g' /var/www/html/wp-config.php"
 ssh nodoweb1 $COMMAND
 ssh nodoweb1 'service httpd restart'
 echo "Ir a http://$MASTER/ y seguir el asistente de instalacion de Wordpress."
-echo -e "Ir a http://$SLAVE:8080/stats \nUser:howtoforge \nPass:howtoforge"
+echo -e "Ir a http://$MASTER:8080/stats \nUser:howtoforge \nPass:howtoforge"
