@@ -50,6 +50,10 @@ ssh nodoweb1 'curl -ks https://raw.githubusercontent.com/tuxtter/haproxylb/maste
 ssh nodoweb2 'curl -ks https://raw.githubusercontent.com/tuxtter/haproxylb/master/WebNode2.sh | /bin/sh'
 ssh nodoweb3 'curl -ks https://raw.githubusercontent.com/tuxtter/haproxylb/master/WebNode3.sh | /bin/sh'
 
+ssh nodoweb1  "echo \"ALL: $WEBNODE1/32 $WEBNODE2/32 $WEBNODE3/32 $MASTER/32 $SLAVE/32 $VIRTUALIP/32 127.0.0.1/32\" > /etc/hosts.allow"
+ssh nodoweb2  "echo \"ALL: $WEBNODE1/32 $WEBNODE2/32 $WEBNODE3/32 $MASTER/32 $SLAVE/32 $VIRTUALIP/32 127.0.0.1/32\" > /etc/hosts.allow"
+ssh nodoweb3  "echo \"ALL: $WEBNODE1/32 $WEBNODE2/32 $WEBNODE3/32 $MASTER/32 $SLAVE/32 $VIRTUALIP/32 127.0.0.1/32\" > /etc/hosts.allow"
+
 ssh nododb1 'curl -ks https://raw.githubusercontent.com/tuxtter/haproxylb/master/DBNode1.sh | /bin/sh'
 TMPPASS=`ssh nododb1 cat /var/log/mysqld.log | grep "temporary password" | awk {'print $11'}`
 #COMMAND="mysql -u root -p\"$TMPPASS\" -e \"UPDATE mysql.user SET Password = PASSWORD('$DBPASS') WHERE User = 'root'\""
