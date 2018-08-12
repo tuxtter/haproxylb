@@ -1,4 +1,9 @@
 #!/bin/sh
+########################################################################################################
+#- 2 Load Balancers (MASTER & BACKUP) with HAProxy and Keepalived.
+#- 3 Web nodes with Wordpress + Apache + GlusterFS
+#- 3 DB Nodes with PerconaDB Cluster
+########################################################################################################
 VIRTUALIP=192.168.183.101
 MASTER=192.168.183.102
 SLAVE=192.168.183.103
@@ -34,6 +39,28 @@ scp /etc/hosts nodoweb3:/etc/hosts
 scp /etc/hosts nododb1:/etc/hosts
 scp /etc/hosts nododb2:/etc/hosts
 scp /etc/hosts nododb3:/etc/hosts
+
+yum install -y keepalived
+curl -ks -o /etc/keepalived/keepalived.conf https://raw.githubusercontent.com/tuxtter/myScripts/master/keepalived.conf
+sed -i "/interface eth0/s/interface eth0/interface enp0s8/g" /etc/keepalived/keepalived.conf
+sed -i "/state MASTER/s/state MASTER/state BACKUP/g" /etc/keepalived/keepalived.conf
+sed -i "/priority 101/s/priority 101/priority 100/g" /etc/keepalived/keepalived.conf
+sed -i "/192.168.183.101/s/192.168.183.101/$VIRTUALIP/g" /etc/keepalived/keepalived.conf
+
+echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+iptables -I INPUT -i enp0s8 -d 224.0.0.0/8 -p vrrp -j ACCEPT
+iptables -I OUTPUT -o enp0s8 -d 224.0.0.0/8 -p vrrp -j ACCEPT
+
+systemctl enable keepalived
+systemctl start keepalived
+ssh master "yum install -y keepalived"
+ssh master "curl -ks -o /etc/keepalived/keepalived.conf https://raw.githubusercontent.com/tuxtter/myScripts/master/keepalived.conf"
+COMMAND="sed -i \"/interface eth0/s/interface eth0/interface enp0s8/g\" /etc/keepalived/keepalived.conf"
+ssh master $COMMAND
+COMMAND="sed -i \"/192.168.183.101/s/192.168.183.101/$VIRTUALIP/g\" /etc/keepalived/keepalived.conf"
+ssh master $COMMAND
+ssh master "systemctl enable keepalived"
+ssh master "systemctl start keepalived"
 
 curl -ks https://raw.githubusercontent.com/tuxtter/haproxylb/master/LBMaster.sh | /bin/sh
 sed -i "/nodoweb1/s/192.168.183.6/$WEBNODE1/g" /etc/haproxy/haproxy.cfg
