@@ -1,0 +1,119 @@
+version: '3'
+services:
+
+  dbnode1:
+    container_name: dbnode1
+    image: micluster/galera
+    environment:
+      MYSQL_ROOT_PASSWORD: jejelolrofl
+      GALERA_NEW_CLUSTER: 1
+    hostname: dbnode1
+    privileged: true
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.104
+    volumes:
+      - ./galera/node1.cnf:/etc/mysql/conf.d/galera.conf
+      - ./galera/node1:/var/lib/mysql
+
+  dbnode2:
+    container_name: dbnode2
+    image: micluster/galera
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    hostname: dbnode2
+    privileged: true
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.105
+    volumes:
+      - ./galera/node2.cnf:/etc/mysql/conf.d/galera.conf
+      - ./galera/node2:/var/lib/mysql
+
+  dbnode3:
+    container_name: dbnode3
+    image: micluster/galera
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    hostname: dbnode3
+    privileged: true
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.106
+    volumes:
+      - ./galera/node3.cnf:/etc/mysql/conf.d/galera.conf
+      - ./galera/node3:/var/lib/mysql
+
+  webnode1:
+    container_name: webnode1
+    image: wordpress
+    privileged: true
+    depends_on:
+      - dbnode1
+      - dbnode2
+      - dbnode3
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.107
+    volumes:
+      - apache_data_volume:/var/www/html
+
+  webnode2:
+    container_name: webnode2
+    image: wordpress
+    privileged: true
+    depends_on:
+      - webnode1
+      - dbnode1
+      - dbnode2
+      - dbnode3
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.108
+    volumes:
+      - apache_data_volume:/var/www/html
+
+  webnode3:
+    container_name: webnode3
+    image: wordpress
+    privileged: true
+    depends_on:
+      - webnode1
+      - webnode2
+      - dbnode1
+      - dbnode2
+      - dbnode3
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.109
+    volumes:
+      - apache_data_volume:/var/www/html
+
+  master:
+    container_name: master
+    image: haproxy
+    networks:
+      network_galera:
+        ipv4_address: 172.18.0.110
+    ports:
+      - 80:80
+    depends_on:
+      - webnode1
+      - webnode2
+      - webnode3
+      - dbnode1
+      - dbnode2
+      - dbnode3
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+networks:
+  network_galera:
+    name: galera
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+
+volumes:
+  apache_data_volume:
